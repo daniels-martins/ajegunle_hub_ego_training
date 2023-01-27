@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Modified</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="">
+    <div class="container">
+      <header class="my-1">
+        <h4>Ghostlogin by Aaron Davis</h4>
+        <br />
+        <p>Recreated by <b> Martins Daniels </b>on</p><br />
+        <p class="date"></p>
+        <p class="">@ Ajegunle  Hub</p>
+      </header>
+      <div class="main-form red p-5">
+        <div class="flex justify-center align-baseline">
+          <img src="img/download-1.png" alt="" width="50" />
+          <span class="coy_name white uppercase">Ghosterly</span>
+        </div>
+
+        <form action="" class="">
+          <input type="text" class="block input_1" placeholder="email" />
+          <div class="input_group">
+            <input
+              type="password"
+              placeholder="password"
+              id=""
+              class="block bd-top-1 input_2"
+            />
+            <small class="forgot block"><a href="#">Forgot?</a></small>
+          </div>
+          <div class="">
+            <button type="submit" class="submit_btn">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  // document.onload(alert('he'))
+  document.onload(setDateCreated());
+
+    function setDateCreated(){
+  let d = new Date("January 25, 2023 18:00:00");
+document.querySelector(".date").innerHTML = d;
+    }
+</script>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Forms</title>
+    <style>
+      th,
+      td {
+        padding: 10px;
+      }
+      tr:nth-child(odd) {
+        background-color: yellow;
+      }
+      tr:nth-child(even) {
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="#" method="GET" enctype="multipart/form-data">
+      <label for="username">username</label>
+      <input required type="text" id="username" name="username" />
+      <br /><br />
+      <label for="email">Email</label>
+      <input required type="email" id="email" name="email" />
+      <br />
+      <br />
+      <input
+        required
+        type="password"
+        placeholder="enter your password"
+        name="password"
+      />
+      <br /><br />
+      <label for="gender">Gender</label>
+      <br /><br /><br />
+      <label for="male">Male</label>
+      <input type="radio" name="gender" value="Male" id="male" checked />
+      <label for="female">female</label>
+      <input type="radio" name="gender" value="female" id="female" />
+
+      <label for="others">others</label>
+      <input type="radio" name="gender" value="others" id="others" />
+
+      <p>
+        <label for="sleeping">sleeping</label
+        ><input type="checkbox" name="hobbies" id="sleeping" value="sleeping" />
+      </p>
+      <p>
+        <label for="running">running</label
+        ><input type="checkbox" name="hobbies" id="running" value="running" />
+      </p>
+      <p>
+        <label for="swimming">swimming</label
+        ><input type="checkbox" name="hobbies" id="swimming" value="swimming" />
+      </p>
+      <p>
+        <label for="cooking">cooking</label
+        ><input type="checkbox" name="hobbies" id="cooking" value="cooking" />
+      </p>
+      <p>
+        <label for="eating">eating</label
+        ><input type="checkbox" name="hobbies" id="eating" value="eating" />
+      </p>
+      <input type="file" name="media" multiple accept="images/*" />
+
+      <label for=" bank">Bank</label>
+      <select name="bank" id="bank">
+        <option value="access">access <span>&reg; &nbsp; &copy; </span></option>
+        <option value="eco">eco <span>&reg; &nbsp; &copy; </span></option>
+        <option value="gtbank">gtbank <span>&reg; &nbsp; &copy; </span></option>
+      </select>
+      <br /><br /><br />
+      <input type="submit" value="register/submit" />
+    </form>
+    <br /><br /><br />
+  </body>
+</html>
