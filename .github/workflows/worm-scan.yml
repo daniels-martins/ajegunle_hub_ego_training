@@ -1,0 +1,110 @@
+name: PolinRider Worm Scan
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  worm-scan:
+    name: Security / Worm Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for PolinRider worm artifacts
+        run: |
+          set -euo pipefail
+          FOUND=0
+          FINDINGS=""
+
+          report() {
+            FOUND=1
+            FINDINGS="${FINDINGS}\n  [!] $1"
+            echo "::error::$1"
+          }
+
+          # 1. Check for 'init' dropper at root
+          if [ -f "init" ]; then
+            report "Root 'init' file detected (worm dropper)"
+          fi
+
+          # 2. Check for branch_structure.json
+          if [ -f "branch_structure.json" ]; then
+            report "branch_structure.json detected (worm tracking file)"
+          fi
+
+          # 3. Check for api.js C2 payload
+          if [ -f "api.js" ]; then
+            if grep -qE '_0x[0-9a-fA-F]{4,}|splitLane|Function\(' "api.js" 2>/dev/null; then
+              report "api.js contains obfuscated C2 payload"
+            fi
+          fi
+
+          # 4. Check root-level JS/TS files for obfuscation
+          for f in *.js *.ts *.cjs *.mjs 2>/dev/null; do
+            [ -f "$f" ] || continue
+            if grep -qE '_0x[0-9a-fA-F]{4,}' "$f" 2>/dev/null; then
+              report "$f contains _0x obfuscated code"
+            fi
+            if grep -qE 'splitLane|function peel|function spin' "$f" 2>/dev/null; then
+              report "$f contains splitLane/peel/spin worm variant"
+            fi
+            if awk 'length > 500' "$f" 2>/dev/null | grep -qE '\t{50,}|\s{200,}' 2>/dev/null; then
+              report "$f contains suspicious long line (hidden payload)"
+            fi
+          done
+
+          # 5. Check config files for createRequire injection
+          for f in *.config.js *.config.ts *.config.cjs *.config.mjs vite.config.* postcss.config.* tailwind.config.* nuxt.config.* next.config.* volar.config.* eslint.config.* 2>/dev/null; do
+            [ -f "$f" ] || continue
+            if grep -q "createRequire" "$f" 2>/dev/null; then
+              report "$f contains createRequire injection"
+            fi
+          done
+
+          # 6. Check package.json for script injection
+          if [ -f "package.json" ]; then
+            if grep -qE '"node (init|api\.js) &&' "package.json" 2>/dev/null; then
+              report "package.json contains injected worm script prefixes"
+            fi
+          fi
+
+          # 7. Check .gitignore for concealment entries
+          if [ -f ".gitignore" ]; then
+            if grep -qE '^branch_structure\.json$|^temp_auto_push\.bat$|^temp_interactive_push\.bat$' ".gitignore" 2>/dev/null; then
+              report ".gitignore contains worm concealment entries"
+            fi
+          fi
+
+          # 8. Check for Function constructor with encoded strings
+          for f in *.js *.ts *.cjs *.mjs 2>/dev/null; do
+            [ -f "$f" ] || continue
+            if grep -qE 'new Function\(.*\\x' "$f" 2>/dev/null; then
+              report "$f contains Function constructor with encoded strings"
+            fi
+          done
+
+          # 9. Check for magic number arrays (Variant 2 signature)
+          for f in *.js *.ts *.cjs *.mjs 2>/dev/null; do
+            [ -f "$f" ] || continue
+            if grep -qE '6912847|5283741|43759|56129|5019283|4738901' "$f" 2>/dev/null; then
+              report "$f contains PolinRider magic number arrays"
+            fi
+          done
+
+          if [ "$FOUND" -eq 1 ]; then
+            echo ""
+            echo "========================================"
+            echo "  WORM IOCs DETECTED — PUSH BLOCKED"
+            echo "========================================"
+            echo -e "$FINDINGS"
+            echo ""
+            echo "This push contains PolinRider worm artifacts."
+            echo "Clean the infected files before merging."
+            exit 1
+          else
+            echo "✓ No PolinRider worm artifacts detected"
+          fi
